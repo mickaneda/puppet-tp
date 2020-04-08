@@ -157,6 +157,10 @@ define tp::dir (
 
   String[1]              $data_module        = 'tinydata',
 
+  Boolean                $make_isntall       = false,
+  Optional[String]       $check_file         = '/dummy/file/name',
+  Optional[String]       $install_cmd        = 'make && make install',
+
   ) {
 
   # Settings evaluation
@@ -257,6 +261,14 @@ define tp::dir (
     }
     file { $manage_path:
       * => $file_params + pick($settings[config_dir_params],{})
+    }
+  }
+
+  if $make_isntall == true {
+    exec { "${install_cmd} for ${source}":
+      creates => $check_file,
+      command => "cd ${manage_path} && ${install_cmd}",
+      path    => '/bin',
     }
   }
 
